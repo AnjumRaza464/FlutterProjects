@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Product images: anyone may view them; only signed-in admins may upload.
+    match /products/{id} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

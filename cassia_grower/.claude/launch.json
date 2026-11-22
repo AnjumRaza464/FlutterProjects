@@ -1,0 +1,31 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "admin-panel",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "web-server", "--web-hostname", "localhost", "--web-port", "5001", "-t", "lib/admin/main_admin.dart"],
+      "port": 5001
+    },
+    {
+      "name": "farmer-app",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "web-server", "--web-hostname", "localhost", "--web-port", "5002", "-t", "lib/main.dart"],
+      "port": 5002
+    },
+    {
+      "name": "farmer-app-2",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "web-server", "--web-hostname", "localhost", "--web-port", "5004", "-t", "lib/main.dart"],
+      "port": 5004,
+      "autoPort": false
+    },
+    {
+      "name": "farmer-app-3",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "web-server", "--web-hostname", "localhost", "--web-port", "5006", "-t", "lib/main.dart"],
+      "port": 5006,
+      "autoPort": false
+    }
+  ]
+}
