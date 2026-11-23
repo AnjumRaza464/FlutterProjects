@@ -87,11 +87,20 @@ class _Sidebar extends StatelessWidget {
     return Container(
       width: expanded ? 258 : 78,
       decoration: const BoxDecoration(
+        // Fresh, lighter brand green (matches the website hero) instead of the
+        // old dark forest green.
         gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF0E3D1E), Color(0xFF17512C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2EA863), Color(0xFF178F4E), Color(0xFF0F7A41)],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x1F000000),
+            blurRadius: 18,
+            offset: Offset(2, 0),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -124,7 +133,7 @@ class _Sidebar extends StatelessWidget {
             },
           ),
           const Spacer(),
-          Divider(color: Colors.white.withValues(alpha: 0.12), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.20), height: 1),
           const SizedBox(height: 8),
           _SidebarButton(
             icon: Icons.logout,
@@ -170,7 +179,7 @@ class _Sidebar extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.w800)),
                   Text('Admin panel',
-                      style: TextStyle(color: Colors.white70, fontSize: 12)),
+                      style: TextStyle(color: Color(0xE6FFFFFF), fontSize: 12)),
                 ],
               ),
             ),
@@ -225,10 +234,10 @@ class _NavItemState extends State<_NavItem> {
   @override
   Widget build(BuildContext context) {
     final selected = widget.selected;
-    final fg = selected ? Colors.white : Colors.white.withValues(alpha: 0.72);
+    final fg = selected ? Colors.white : Colors.white.withValues(alpha: 0.86);
     final bg = selected
-        ? Colors.white.withValues(alpha: 0.16)
-        : (_hover ? Colors.white.withValues(alpha: 0.08) : Colors.transparent);
+        ? Colors.white.withValues(alpha: 0.20)
+        : (_hover ? Colors.white.withValues(alpha: 0.12) : Colors.transparent);
 
     final row = Row(
       mainAxisAlignment: widget.expanded
@@ -372,12 +381,12 @@ class _SidebarButtonState extends State<_SidebarButton> {
                 : MainAxisAlignment.center,
             children: [
               Icon(widget.icon,
-                  color: Colors.white.withValues(alpha: 0.72), size: 22),
+                  color: Colors.white.withValues(alpha: 0.86), size: 22),
               if (widget.expanded) ...[
                 const SizedBox(width: 12),
                 Text(widget.label,
                     style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.72),
+                        color: Colors.white.withValues(alpha: 0.86),
                         fontSize: 14.5,
                         fontWeight: FontWeight.w600)),
               ],

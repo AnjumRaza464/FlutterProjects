@@ -68,10 +68,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
+          // Fresh, lighter brand green — matches the sidebar and dashboard.
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF0E3D1E), Color(0xFF17512C)],
+            colors: [Color(0xFF2EA863), Color(0xFF178F4E), Color(0xFF0F7A41)],
           ),
         ),
         child: Center(

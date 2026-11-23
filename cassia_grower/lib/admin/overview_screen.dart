@@ -33,18 +33,12 @@ class _OverviewViewState extends State<OverviewView> {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.colors;
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(24, 22, 24, 40),
         children: [
-          Text('Welcome back 👋',
-              style: TextStyle(
-                  fontSize: 22, fontWeight: FontWeight.w800, color: c.ink)),
-          const SizedBox(height: 4),
-          Text('Here is how Cassia Seed is doing right now.',
-              style: TextStyle(color: c.muted)),
+          _hero(context),
           const SizedBox(height: 22),
           _statsGrid(context),
           const SizedBox(height: 26),
@@ -56,6 +50,109 @@ class _OverviewViewState extends State<OverviewView> {
         ],
       ),
     );
+  }
+
+  // ---------------------------------------------------------------- hero
+
+  /// A friendly gradient welcome banner with the live date and two quick
+  /// actions into the busiest sections.
+  Widget _hero(BuildContext context) {
+    final wide = MediaQuery.sizeOf(context).width >= 760;
+    final banner = Container(
+      padding: EdgeInsets.fromLTRB(26, 24, wide ? 20 : 26, 24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2EA863), Color(0xFF178F4E), Color(0xFF0F7A41)],
+        ),
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF127A45).withValues(alpha: 0.30),
+            blurRadius: 26,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Welcome back 👋',
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        height: 1.1)),
+                const SizedBox(height: 7),
+                Text('Here is how Cassia Seed is doing right now.',
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.92),
+                        fontSize: 14.5)),
+                const SizedBox(height: 3),
+                Text(_todayLabel(),
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.72),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600)),
+                const SizedBox(height: 18),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    _HeroAction(
+                      icon: Icons.add_box_outlined,
+                      label: 'Manage products',
+                      filled: true,
+                      onTap: () => widget.onOpenSection(1),
+                    ),
+                    _HeroAction(
+                      icon: Icons.receipt_long_outlined,
+                      label: 'Review orders',
+                      filled: false,
+                      onTap: () => widget.onOpenSection(2),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          if (wide) ...[
+            const SizedBox(width: 16),
+            Container(
+              width: 92,
+              height: 92,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                shape: BoxShape.circle,
+                border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.25), width: 1.5),
+              ),
+              child: const Text('🌱', style: TextStyle(fontSize: 44)),
+            ),
+          ],
+        ],
+      ),
+    );
+    return banner;
+  }
+
+  String _todayLabel() {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June', 'July',
+      'August', 'September', 'October', 'November', 'December'
+    ];
+    const days = [
+      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+      'Sunday'
+    ];
+    final now = DateTime.now();
+    return '${days[now.weekday - 1]}, ${now.day} ${months[now.month - 1]} '
+        '${now.year}';
   }
 
   // --------------------------------------------------------------- stats
@@ -76,7 +173,7 @@ class _OverviewViewState extends State<OverviewView> {
               final available = all.where((p) => p.available).length;
               return _StatCard(
                 icon: Icons.storefront_outlined,
-                tint: const Color(0xFF2F7A3F),
+                tint: const Color(0xFF1E9E57),
                 label: 'Products',
                 value: snap.hasData ? '${all.length}' : '—',
                 sub: '$available available',
@@ -309,6 +406,74 @@ class _OverviewViewState extends State<OverviewView> {
       );
 }
 
+/// A pill button used inside the green hero banner. [filled] renders it as a
+/// solid white button; otherwise it is a translucent outlined button.
+class _HeroAction extends StatefulWidget {
+  const _HeroAction({
+    required this.icon,
+    required this.label,
+    required this.filled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool filled;
+  final VoidCallback onTap;
+
+  @override
+  State<_HeroAction> createState() => _HeroActionState();
+}
+
+class _HeroActionState extends State<_HeroAction> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    const brand = Color(0xFF147A45);
+    final Color bg;
+    final Color fg;
+    if (widget.filled) {
+      bg = _hover ? Colors.white : Colors.white.withValues(alpha: 0.92);
+      fg = brand;
+    } else {
+      bg = Colors.white.withValues(alpha: _hover ? 0.26 : 0.16);
+      fg = Colors.white;
+    }
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 130),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(12),
+            border: widget.filled
+                ? null
+                : Border.all(color: Colors.white.withValues(alpha: 0.5)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(widget.icon, size: 18, color: fg),
+              const SizedBox(width: 8),
+              Text(widget.label,
+                  style: TextStyle(
+                      color: fg,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13.5)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// A KPI tile: coloured icon, a big number, a label and a one-line sub-stat.
 class _StatCard extends StatefulWidget {
   const _StatCard({
@@ -344,7 +509,9 @@ class _StatCardState extends State<_StatCard> {
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(0, _hover ? -3 : 0, 0),
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -353,22 +520,35 @@ class _StatCardState extends State<_StatCard> {
                 color: _hover ? widget.tint.withValues(alpha: 0.5) : c.line),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: _hover ? 0.08 : 0.03),
-                blurRadius: _hover ? 16 : 8,
-                offset: const Offset(0, 4),
+                color: _hover
+                    ? widget.tint.withValues(alpha: 0.18)
+                    : Colors.black.withValues(alpha: 0.03),
+                blurRadius: _hover ? 20 : 8,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: widget.tint.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(widget.icon, color: widget.tint, size: 22),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: widget.tint.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(widget.icon, color: widget.tint, size: 22),
+                  ),
+                  const Spacer(),
+                  AnimatedOpacity(
+                    opacity: _hover ? 1 : 0,
+                    duration: const Duration(milliseconds: 140),
+                    child: Icon(Icons.arrow_forward_rounded,
+                        color: widget.tint, size: 18),
+                  ),
+                ],
               ),
               const SizedBox(height: 14),
               Text(widget.value,
