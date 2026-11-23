@@ -8,6 +8,7 @@ class FarmerProfile {
     required this.name,
     required this.phone,
     this.district = '',
+    this.town = '',
     this.village = '',
     this.crops = const [],
     this.createdAt,
@@ -21,6 +22,7 @@ class FarmerProfile {
       name: _text(m['name']),
       phone: _text(m['phone']),
       district: _text(m['district']),
+      town: _text(m['town']),
       village: _text(m['village']),
       crops: [
         if (crops is List)
@@ -37,6 +39,10 @@ class FarmerProfile {
   final String name;
   final String phone;
   final String district;
+
+  /// The farmer's nearest city / town (e.g. "Hyderabad", "Tando Jam"). Used
+  /// with [district] to find the dealers closest to them.
+  final String town;
   final String village;
   final List<String> crops;
   final DateTime? createdAt;
@@ -47,6 +53,7 @@ class FarmerProfile {
         'name': name,
         'phone': phone,
         'district': district,
+        'town': town,
         'village': village,
         'crops': crops,
         'createdAt': FieldValue.serverTimestamp(),

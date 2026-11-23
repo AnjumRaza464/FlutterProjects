@@ -11,6 +11,7 @@ import '../../theme/app_palette.dart';
 import '../../widgets/account_field.dart';
 import '../../widgets/cassia_header.dart';
 import '../../widgets/cassia_ui.dart';
+import '../../widgets/district_picker.dart';
 
 /// The dealer side: sign in or apply for a dealership, and — once signed in —
 /// the dealer's dashboard with their ledger, tier and awards (all read-only,
@@ -66,10 +67,13 @@ class _DealerFormsState extends State<_DealerForms> {
   final _pass2 = TextEditingController();
   final _business = TextEditingController();
   final _city = TextEditingController();
-  final _district = TextEditingController();
   final _address = TextEditingController();
   final _products = TextEditingController();
   final _notes = TextEditingController();
+
+  /// Chosen from the shared district list (not typed), so it matches a
+  /// farmer's district exactly when they search in Find a Dealer.
+  String _district = '';
 
   @override
   void dispose() {
@@ -82,7 +86,6 @@ class _DealerFormsState extends State<_DealerForms> {
       _pass2,
       _business,
       _city,
-      _district,
       _address,
       _products,
       _notes,
@@ -158,7 +161,15 @@ class _DealerFormsState extends State<_DealerForms> {
   Future<void> _submit() async {
     final s = context.s;
     if (_business.text.trim().isEmpty) {
-      setState(() => _error = s.somethingWentWrong);
+      setState(() => _error = s.enterBusinessName);
+      return;
+    }
+    if (_district.isEmpty) {
+      setState(() => _error = s.chooseDistrictError);
+      return;
+    }
+    if (_city.text.trim().isEmpty) {
+      setState(() => _error = s.enterCityTown);
       return;
     }
     setState(() {
@@ -172,7 +183,7 @@ class _DealerFormsState extends State<_DealerForms> {
         password: _pass.text,
         businessName: _business.text.trim(),
         city: _city.text.trim(),
-        district: _district.text.trim(),
+        district: _district,
         shopAddress: _address.text.trim(),
         products: _products.text.trim(),
         notes: _notes.text.trim(),
@@ -327,10 +338,19 @@ class _DealerFormsState extends State<_DealerForms> {
           AccountField(
               label: s.businessName, controller: _business, leading: '🏪'),
           const SizedBox(height: 14),
-          AccountField(label: s.city, controller: _city, leading: '🏙️'),
+          DistrictPickerField(
+            value: _district,
+            onChanged: (v) => setState(() {
+              _district = v;
+              _error = null;
+            }),
+          ),
           const SizedBox(height: 14),
           AccountField(
-              label: s.districtLabel, controller: _district, leading: '📍'),
+              label: s.cityTown,
+              controller: _city,
+              hint: s.cityTownHint,
+              leading: '🏙️'),
           const SizedBox(height: 14),
           AccountField(
               label: s.shopAddress,

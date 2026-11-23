@@ -28,6 +28,7 @@ class FarmerAuthService {
     required String phone,
     required String pin,
     String district = '',
+    String town = '',
     String village = '',
     List<String> crops = const [],
   }) async {
@@ -51,6 +52,7 @@ class FarmerAuthService {
         name: name,
         phone: CassiaAccounts.normalizePhone(phone),
         district: district,
+        town: town,
         village: village,
         crops: crops,
       );
@@ -78,6 +80,27 @@ class FarmerAuthService {
   }
 
   Future<void> signOut() => _auth.signOut();
+
+  /// Updates just the farmer's location, so a farmer who registered before
+  /// these fields existed (or who skipped them) can set their district and
+  /// town from the Find a Dealer screen and get matched to nearby dealers.
+  Future<void> updateLocation({
+    required String uid,
+    required String district,
+    required String town,
+  }) {
+    return _farmers.doc(uid).set({
+      'district': district,
+      'town': town,
+    }, SetOptions(merge: true));
+  }
+
+  /// The farmer's profile, read once (used by Find a Dealer to learn their
+  /// district and town). Null if it hasn't been created yet.
+  Future<FarmerProfile?> loadProfile(String uid) async {
+    final doc = await _farmers.doc(uid).get();
+    return doc.exists ? FarmerProfile.fromDoc(doc) : null;
+  }
 
   /// The signed-in farmer's profile, kept live. Null until it loads or if
   /// nobody is signed in.

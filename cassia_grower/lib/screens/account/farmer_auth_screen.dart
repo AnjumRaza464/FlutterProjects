@@ -10,6 +10,7 @@ import '../../theme/app_palette.dart';
 import '../../widgets/account_field.dart';
 import '../../widgets/cassia_header.dart';
 import '../../widgets/cassia_ui.dart';
+import '../../widgets/district_picker.dart';
 
 /// A crop a farmer can pick while registering. Stored by its English name.
 typedef _Crop = ({String emoji, String en, String ur});
@@ -80,11 +81,15 @@ class _FarmerFormsState extends State<_FarmerForms> {
   final _phone = TextEditingController();
   final _pin = TextEditingController();
   final _pin2 = TextEditingController();
-  final _district = TextEditingController();
+  final _town = TextEditingController();
   final _village = TextEditingController();
   final _crops = <String>{};
 
-  static const _steps = 7;
+  /// Chosen from the shared district list (not typed), so it matches a
+  /// dealer's district exactly when the farmer searches in Find a Dealer.
+  String _district = '';
+
+  static const _steps = 8;
 
   @override
   void dispose() {
@@ -95,7 +100,7 @@ class _FarmerFormsState extends State<_FarmerForms> {
       _phone,
       _pin,
       _pin2,
-      _district,
+      _town,
       _village,
     ]) {
       c.dispose();
@@ -162,7 +167,11 @@ class _FarmerFormsState extends State<_FarmerForms> {
         }
       case 3:
         if (_pin2.text.trim() != _pin.text.trim()) return s.pinsDontMatch;
-      case 6:
+      case 4:
+        if (_district.isEmpty) return s.chooseDistrictError;
+      case 5:
+        if (_town.text.trim().isEmpty) return s.enterCityTown;
+      case 7:
         if (_crops.isEmpty) return s.pickAtLeastOneCrop;
     }
     return null;
@@ -195,7 +204,8 @@ class _FarmerFormsState extends State<_FarmerForms> {
         name: _name.text.trim(),
         phone: _phone.text,
         pin: _pin.text.trim(),
-        district: _district.text.trim(),
+        district: _district,
+        town: _town.text.trim(),
         village: _village.text.trim(),
         crops: _crops.toList(),
       );
@@ -317,6 +327,7 @@ class _FarmerFormsState extends State<_FarmerForms> {
       s.choosePin,
       s.confirmPin,
       s.whichDistrict,
+      s.whichTown,
       s.whichVillage,
       s.whichCrops,
     ];
@@ -416,14 +427,26 @@ class _FarmerFormsState extends State<_FarmerForms> {
         );
       case 4:
         return _labelled(
-          s.optionalLabel,
-          AccountField(
-            label: s.districtLabel,
-            controller: _district,
-            leading: '📍',
+          s.requiredLabel,
+          DistrictPickerField(
+            value: _district,
+            onChanged: (v) => setState(() {
+              _district = v;
+              _error = null;
+            }),
           ),
         );
       case 5:
+        return _labelled(
+          s.requiredLabel,
+          AccountField(
+            label: s.cityTown,
+            controller: _town,
+            hint: s.cityTownHint,
+            leading: '🏙️',
+          ),
+        );
+      case 6:
         return _labelled(
           s.optionalLabel,
           AccountField(
@@ -432,7 +455,7 @@ class _FarmerFormsState extends State<_FarmerForms> {
             leading: '🏡',
           ),
         );
-      case 6:
+      case 7:
       default:
         return Wrap(
           spacing: 8,
@@ -533,6 +556,8 @@ class _FarmerAccountView extends StatelessWidget {
             const SizedBox(height: 18),
             if ((profile?.district ?? '').isNotEmpty)
               _infoRow(context, '📍', s.myDistrict, profile!.district),
+            if ((profile?.town ?? '').isNotEmpty)
+              _infoRow(context, '🏙️', s.cityTown, profile!.town),
             if ((profile?.village ?? '').isNotEmpty)
               _infoRow(context, '🏡', s.myVillage, profile!.village),
             if (profile != null && profile.crops.isNotEmpty) ...[

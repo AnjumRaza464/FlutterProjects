@@ -64,5 +64,15 @@ service cloud.firestore {
                     && request.resource.data.totalPurchases == 0;
       allow update, delete: if isAdmin();
     }
+
+    // Public dealer directory: the safe, listable half of an approved dealer
+    // (shop name, district, town, contact) that powers "Find a Dealer". An
+    // admin writes an entry when they approve a dealer and removes it on
+    // rejection — never the dealer themselves — so a dealer's private ledger
+    // (in `dealers/{uid}`) is never exposed. Any signed-in farmer may read it.
+    match /dealer_directory/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
   }
 }

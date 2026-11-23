@@ -28,6 +28,15 @@ class Launchers {
     );
   }
 
+  /// Opens a WhatsApp chat with a specific [number] (a dealer), pre-filled
+  /// with [message]. The farmer reviews and sends it themselves.
+  static Future<bool> whatsAppTo(String number, String message) {
+    final digits = number.replaceAll(RegExp(r'[^0-9]'), '');
+    return _launch(
+      'https://wa.me/$digits?text=${Uri.encodeComponent(message)}',
+    );
+  }
+
   static Future<bool> openWebsite(String url) => _launch(url);
 
   static Future<bool> dialPhone(String number) {

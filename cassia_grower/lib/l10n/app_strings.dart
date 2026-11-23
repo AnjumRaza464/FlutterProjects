@@ -833,11 +833,57 @@ class AppStrings {
       _t('Confirm your secret number', 'اپنا خفیہ نمبر دوبارہ لکھیں');
   String get whichDistrict =>
       _t('Which district are you from?', 'آپ کس ضلع سے ہیں؟');
+  String get whichTown => _t(
+      'Which city or town are you near?', 'آپ کس شہر یا قصبے کے قریب ہیں؟');
   String get whichVillage =>
       _t('Which village do you live in?', 'آپ کس گاؤں میں رہتے ہیں؟');
   String get whichCrops =>
       _t('Which crops do you grow?', 'آپ کون سی فصلیں اگاتے ہیں؟');
   String get optionalLabel => _t('Optional', 'اختیاری');
+
+  // City / town field (farmer register, dealer apply, Find a Dealer).
+  String get cityTown => _t('City / town', 'شہر / قصبہ');
+  String get cityTownHint =>
+      _t('e.g. Hyderabad, Tando Jam', 'مثال: حیدرآباد، ٹنڈوجام');
+  String get chooseDistrictError =>
+      _t('Please choose your district.', 'براہِ کرم اپنا ضلع منتخب کریں۔');
+  String get enterCityTown => _t(
+      'Please enter your city or town.', 'براہِ کرم اپنا شہر یا قصبہ درج کریں۔');
+  String get enterBusinessName => _t(
+      'Please enter your business name.', 'براہِ کرم اپنے کاروبار کا نام درج کریں۔');
+
+  // ----------------------------------------------------- find a dealer
+  String get findDealerSubtitle =>
+      _t('Seed dealers near you', 'آپ کے قریب بیج ڈیلر');
+  String get loginToFindDealersTitle =>
+      _t('Login to find dealers', 'ڈیلر تلاش کرنے کے لیے لاگ اِن کریں');
+  String get loginToFindDealersBody => _t(
+      'Login to your farmer account so we can show the dealers closest to you.',
+      'اپنے کسان اکاؤنٹ میں لاگ اِن کریں تاکہ ہم آپ کے قریب ترین ڈیلر دکھا سکیں۔');
+  String get farmerLoginLabel => _t('Farmer login', 'کسان لاگ اِن');
+  String get setYourAreaTitle => _t('Set your area', 'اپنا علاقہ منتخب کریں');
+  String get setYourAreaBody => _t(
+      'Choose your district and town to see the dealers closest to you.',
+      'اپنے قریب ترین ڈیلر دیکھنے کے لیے اپنا ضلع اور شہر منتخب کریں۔');
+  String get setYourArea => _t('Set your area', 'علاقہ منتخب کریں');
+  String get yourAreaLabel => _t('Your area', 'آپ کا علاقہ');
+  String get dealersNearYou => _t('Dealers near you', 'آپ کے قریب ڈیلر');
+  String get yourTownBadge => _t('Your town', 'آپ کا شہر');
+  String get callLabel => _t('Call', 'کال');
+  String get whatsAppLabel => _t('WhatsApp', 'واٹس ایپ');
+  String get saveLabel => _t('Save', 'محفوظ کریں');
+  String get askOurTeam => _t('Ask our team', 'ہماری ٹیم سے پوچھیں');
+  String get couldNotLoadDealers => _t(
+      'Could not load dealers. Please try again.',
+      'ڈیلر لوڈ نہیں ہو سکے۔ براہِ کرم دوبارہ کوشش کریں۔');
+  String get noDealersNearbyTitle =>
+      _t('No dealers here yet', 'یہاں ابھی کوئی ڈیلر نہیں');
+  String noDealersNearbyBody(String district) => _t(
+      'There are no dealers in $district yet. Our team can help you get seeds.',
+      '${data(district)} میں ابھی کوئی ڈیلر نہیں ہے۔ ہماری ٹیم آپ کو بیج دلانے میں مدد کر سکتی ہے۔');
+  String get dealerWhatsAppIntro => _t(
+      'Assalam-o-Alaikum! I found your shop on the Cassia Seed app. I would like to ask about seeds.',
+      'السلام علیکم! مجھے آپ کی دکان کیسیا سیڈ ایپ پر ملی۔ میں بیج کے بارے میں پوچھنا چاہتا ہوں۔');
 
   // The farmer's own account page.
   String get myAccount => _t('My account', 'میرا اکاؤنٹ');

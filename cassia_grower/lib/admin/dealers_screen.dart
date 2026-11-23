@@ -180,7 +180,7 @@ class _DealerCard extends StatelessWidget {
               if (dealer.isPending) ...[
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: () => admin.approve(dealer.uid),
+                    onPressed: () => admin.approve(dealer),
                     icon: const Icon(Icons.check, size: 18),
                     label: const Text('Approve'),
                     style: FilledButton.styleFrom(
@@ -277,6 +277,8 @@ class _DealerCard extends StatelessWidget {
         awards: split(awards.text),
         perks: split(perks.text),
       );
+      // Keep (or backfill) this dealer's public "Find a Dealer" listing.
+      if (dealer.isApproved) await admin.relist(dealer);
     }
 
     for (final c in [balance, purchases, tier, awards, perks]) {
