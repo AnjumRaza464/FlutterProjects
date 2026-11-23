@@ -73,11 +73,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Orders'),
-        backgroundColor: AppColors.green,
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(title: const Text('Orders')),
       body: StreamBuilder<List<AdminOrder>>(
         stream: _orders,
         builder: (context, snapshot) {

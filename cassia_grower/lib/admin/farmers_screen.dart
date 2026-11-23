@@ -31,11 +31,7 @@ class _FarmersScreenState extends State<FarmersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Farmers'),
-        backgroundColor: AppColors.green,
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(title: const Text('Farmers')),
       body: Column(
         children: [
           AdminSearchField(

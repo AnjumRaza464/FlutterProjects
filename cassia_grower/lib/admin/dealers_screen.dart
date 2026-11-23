@@ -28,11 +28,7 @@ class _DealersScreenState extends State<DealersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dealers'),
-        backgroundColor: AppColors.green,
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(title: const Text('Dealers')),
       body: Column(
         children: [
           AdminSearchField(

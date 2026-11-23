@@ -1,16 +1,11 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import '../data/product_repository.dart';
 import '../data/sample_products.dart';
 import '../models/product.dart';
 import '../theme/app_colors.dart';
 import '../widgets/product_image.dart';
-import 'admin_bar_button.dart';
 import 'admin_search_bar.dart';
-import 'dealers_screen.dart';
-import 'farmers_screen.dart';
-import 'orders_screen.dart';
 import 'product_admin_service.dart';
 import 'product_form_screen.dart';
 
@@ -34,21 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Products'),
-        backgroundColor: AppColors.green,
-        foregroundColor: Colors.white,
-        actions: [
-          const FarmersButton(),
-          const DealersButton(),
-          const OrdersButton(),
-          AdminBarButton(
-            icon: Icons.logout,
-            label: 'Sign out',
-            onTap: () => FirebaseAuth.instance.signOut(),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Products')),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.green,
         foregroundColor: Colors.white,
@@ -157,9 +138,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _row(BuildContext context, Product p, ProductAdminService admin) {
-    return Material(
-      color: AppColors.card,
-      borderRadius: BorderRadius.circular(14),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.line),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Row(
