@@ -20,4 +20,11 @@ class AppConfig {
   static const String website = 'https://cassiaseed.com';
   static const String facebook = 'https://www.facebook.com/share/14i89msye72/';
   static const String instagram = 'https://www.instagram.com/cassiaseedpvt.ltd';
+
+  // --- Features ---
+  /// The AI features (Crop Doctor and Ask Cassia) are not live yet. While
+  /// this is true, every entry point to them shows a "coming soon" sheet
+  /// instead of opening the feature. Set it to false once the Cloud
+  /// Functions are deployed (see functions/SETUP.md) to switch them on.
+  static bool aiComingSoon = true;
 }

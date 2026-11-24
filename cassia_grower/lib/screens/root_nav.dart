@@ -1,10 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../config/app_config.dart';
 import '../data/product_repository.dart';
 import '../l10n/app_strings.dart';
 import '../state/cart_scope.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_palette.dart';
+import '../widgets/ai_coming_soon.dart';
 import '../widgets/cassia_header.dart';
 import 'ask_cassia_screen.dart';
 import 'cart_screen.dart';
@@ -46,6 +48,18 @@ class _RootNavState extends State<RootNav> {
   final _trail = <int>[0];
 
   void _openTab(int i) {
+    // The AI tabs (2 Crop Doctor, 3 Ask Cassia) aren't live yet: show the
+    // "coming soon" sheet and stay on the current tab, rather than opening
+    // them. This one guard covers every tab entry point — the bottom bar,
+    // Home's quick actions, the promo banner, the help card and the footer.
+    if (AppConfig.aiComingSoon && (i == 2 || i == 3)) {
+      showAiComingSoon(
+        context,
+        emoji: i == 2 ? '🩺' : '💬',
+        title: i == 2 ? context.s.cropDoctor : context.s.askCassia,
+      );
+      return;
+    }
     if (i == _index) return;
     setState(() {
       _index = i;

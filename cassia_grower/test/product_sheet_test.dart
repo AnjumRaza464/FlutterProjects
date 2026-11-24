@@ -8,6 +8,7 @@
 import 'dart:async';
 import 'dart:ui' show PointerDeviceKind;
 
+import 'package:cassia_grower/config/app_config.dart';
 import 'package:cassia_grower/data/local_store.dart';
 import 'package:cassia_grower/data/pack_photos.dart';
 import 'package:cassia_grower/data/product_repository.dart';
@@ -127,6 +128,10 @@ Future<void> _tap(WidgetTester tester, Finder target) async {
 }
 
 void main() {
+  // The AI features default to "coming soon"; tests that drive the real AI
+  // flow turn it off, and this puts it back afterwards.
+  tearDown(() => AppConfig.aiComingSoon = true);
+
   group('Details', () {
     testWidgets('shows the variety, its facts and that it can be ordered',
         (tester) async {
@@ -255,6 +260,7 @@ void main() {
 
     testWidgets('the crop guide is general advice about the crop, and says so',
         (tester) async {
+      AppConfig.aiComingSoon = false;
       final ai = _FakeAi();
       await _open(tester, _redo, ai: ai);
       await _tap(tester, find.text('Features'));
@@ -275,6 +281,7 @@ void main() {
 
     testWidgets('the crop guide is asked for in the app\'s language',
         (tester) async {
+      AppConfig.aiComingSoon = false;
       final ai = _FakeAi();
       await _open(tester, _redo, ai: ai, language: AppLanguage.ur);
       await _tap(tester, find.text('خصوصیات'));
@@ -286,6 +293,7 @@ void main() {
 
     testWidgets('says so when the AI has not been switched on',
         (tester) async {
+      AppConfig.aiComingSoon = false;
       final ai = _FakeAi()..failWith = const AiFailure(AiFailureKind.notSetUp);
       await _open(tester, _redo, ai: ai);
       await _tap(tester, find.text('Features'));
@@ -381,6 +389,7 @@ void main() {
   group('Ask Cassia about this seed', () {
     testWidgets('opens the chat about the variety, with a first question',
         (tester) async {
+      AppConfig.aiComingSoon = false;
       await _open(tester, _soon);
 
       await tester.tap(find.text('Ask Cassia about this seed'));
@@ -396,6 +405,37 @@ void main() {
           chat.initialQuestion,
           'Tell me about growing Tomato (Soon F1): sowing time, spacing, '
           'fertiliser and common problems in Pakistan.');
+    });
+  });
+
+  group('AI coming soon', () {
+    testWidgets('asking about a seed shows the coming-soon sheet',
+        (tester) async {
+      AppConfig.aiComingSoon = true;
+      final ai = _FakeAi();
+      await _open(tester, _redo, ai: ai);
+
+      await tester.tap(find.text('Ask Cassia about this seed'));
+      await tester.pumpAndSettle();
+
+      // The chat is not opened; a "coming soon" sheet shows instead.
+      expect(find.textContaining('almost ready'), findsOneWidget);
+      expect(find.byType(AskCassiaScreen), findsNothing);
+      expect(find.byType(ProductSheet), findsOneWidget);
+      expect(ai.histories, isEmpty);
+    });
+
+    testWidgets('the crop guide shows the coming-soon sheet', (tester) async {
+      AppConfig.aiComingSoon = true;
+      final ai = _FakeAi();
+      await _open(tester, _redo, ai: ai);
+      await _tap(tester, find.text('Features'));
+
+      await _tap(tester, find.text('🌿 General crop guide (AI)'));
+
+      expect(find.textContaining('almost ready'), findsOneWidget);
+      // The AI is never asked while the feature is coming soon.
+      expect(ai.histories, isEmpty);
     });
   });
 

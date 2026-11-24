@@ -13,6 +13,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_palette.dart';
 import '../theme/crop_style.dart';
 import '../widgets/account_cards.dart';
+import '../widgets/ai_coming_soon.dart';
 import '../widgets/cassia_ui.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_image.dart';
@@ -74,6 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _ask(String question) {
+    if (AppConfig.aiComingSoon) {
+      showAiComingSoon(context, emoji: '💬', title: context.s.askCassia);
+      return;
+    }
     Navigator.of(context).push(MaterialPageRoute(
       builder: (_) => AskCassiaScreen(initialQuestion: question),
     ));

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
 
+import '../config/app_config.dart';
 import '../data/pack_photos.dart';
 import '../data/product_repository.dart';
 import '../l10n/app_strings.dart';
@@ -13,6 +14,7 @@ import '../state/cart_scope.dart';
 import '../state/favourites.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_palette.dart';
+import '../widgets/ai_coming_soon.dart';
 import '../widgets/availability_pill.dart';
 import '../widgets/cassia_ui.dart';
 import '../widgets/not_available_badge.dart';
@@ -108,6 +110,10 @@ class _ProductSheetState extends State<ProductSheet> {
   }
 
   void _askCassia(Product p) {
+    if (AppConfig.aiComingSoon) {
+      showAiComingSoon(context, emoji: '💬', title: context.s.askCassia);
+      return;
+    }
     final question = context.s.growingQuestion(p.crop, p.name);
     Navigator.of(context)
       ..pop()
@@ -127,6 +133,10 @@ class _ProductSheetState extends State<ProductSheet> {
   /// Asks the AI for a general guide to growing this crop — never for
   /// facts about this variety, which only Cassia can supply.
   Future<void> _loadGuide(Product p) async {
+    if (AppConfig.aiComingSoon) {
+      showAiComingSoon(context, emoji: '💬', title: context.s.askCassia);
+      return;
+    }
     if (_guideLoading) return;
     final s = context.s;
     setState(() => _guideLoading = true);
