@@ -151,15 +151,19 @@ class MoreScreen extends StatelessWidget {
         children: [
           _settingLabel(context, Icons.language, s.language),
           const SizedBox(height: 8),
-          SegmentedButton<AppLanguage>(
-            showSelectedIcon: false,
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             // Each language is named in itself, so it can always be found.
-            segments: const [
-              ButtonSegment(value: AppLanguage.en, label: Text('English')),
-              ButtonSegment(value: AppLanguage.ur, label: Text('اردو')),
+            children: [
+              for (final language in AppLanguage.values)
+                ChoiceChip(
+                  label: Text(language.label),
+                  showCheckmark: false,
+                  selected: settings.language == language,
+                  onSelected: (_) => settings.setLanguage(language),
+                ),
             ],
-            selected: {settings.language},
-            onSelectionChanged: (choice) => settings.setLanguage(choice.first),
           ),
           const SizedBox(height: 18),
           _settingLabel(context, Icons.brightness_6_outlined, s.appearance),

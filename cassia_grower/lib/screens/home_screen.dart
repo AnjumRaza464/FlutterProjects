@@ -571,11 +571,12 @@ class _MarqueeState extends State<_Marquee>
 
   @override
   Widget build(BuildContext context) {
+    final s = context.s;
     final crops = widget.crops.isEmpty
         ? const ['Tomato', 'Chilli', 'Okra', 'Carrot', 'Cucumber', 'Brinjal']
         : widget.crops;
     final line = [
-      for (final crop in crops) '${CropStyle.of(crop).emoji} $crop',
+      for (final crop in crops) '${CropStyle.of(crop).emoji} ${s.cropName(crop)}',
     ].join('  ·  ');
     final strip = Text('$line  ·  ',
         maxLines: 1,
@@ -802,7 +803,7 @@ class _CropCircles extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        s.data(entry.value),
+                        s.data(s.cropName(entry.value)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -889,7 +890,7 @@ class _SpotlightState extends State<_Spotlight> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(s.data(p.crop.toUpperCase()),
+                                Text(s.data(s.cropName(p.crop).toUpperCase()),
                                     style: TextStyle(
                                         color: const Color(0xD9FFFFFF),
                                         fontSize: 12,
@@ -905,7 +906,7 @@ class _SpotlightState extends State<_Spotlight> {
                                         fontWeight: FontWeight.w800)),
                                 if (p.packSize.isNotEmpty) ...[
                                   const SizedBox(height: 4),
-                                  Text(s.data(p.packSize),
+                                  Text(s.data(s.packSize(p.packSize)),
                                       style: const TextStyle(
                                           color: Color(0xE6FFFFFF),
                                           fontSize: 13)),

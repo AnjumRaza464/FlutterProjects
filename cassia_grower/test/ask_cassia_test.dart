@@ -197,6 +197,10 @@ void main() {
         home: AskCassiaScreen(service: service),
       ));
 
+      // Open the language menu (it shows the current language, "EN"), then
+      // choose Urdu from the list.
+      await tester.tap(find.text('EN'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('اردو'));
       await tester.pumpAndSettle();
 

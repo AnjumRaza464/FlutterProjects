@@ -242,7 +242,7 @@ class _AskCassiaScreenState extends State<AskCassiaScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _cassiaBubble(_message(welcome, rtl: _s.isUrdu)),
+              _cassiaBubble(_message(welcome, rtl: _s.isRtl)),
               for (final m in _messages)
                 m.isUser
                     ? _userBubble(m)
@@ -462,8 +462,10 @@ class _AskCassiaScreenState extends State<AskCassiaScreen> {
       AiFailureKind.other => (
           Icons.error_outline,
           _s.couldNotGetAnswer,
-          // The server explains itself in English only.
-          _s.isUrdu
+          // The server explains itself in English only, so its raw message is
+          // shown in English and replaced by a general line in every other
+          // language.
+          _s.isRtl
               ? _s.somethingWentWrong
               : failure.serverMessage ?? _s.somethingWentWrong
         ),

@@ -90,8 +90,9 @@ class ProductCard extends StatelessWidget {
                 const SizedBox(height: 1),
                 Text(
                   s.data([
-                    product.crop,
-                    if (product.packSize.isNotEmpty) product.packSize,
+                    s.cropName(product.crop),
+                    if (product.packSize.isNotEmpty)
+                      s.packSize(product.packSize),
                   ].join(' · ')),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

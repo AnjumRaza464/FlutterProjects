@@ -91,7 +91,7 @@ class CassiaHeader extends StatelessWidget implements PreferredSizeWidget {
                             horizontal: 14, vertical: 6),
                         // The arrow points back the way the language reads.
                         child: Text(
-                          s.isUrdu ? '→' : '←',
+                          s.isRtl ? '→' : '←',
                           style: const TextStyle(
                             color: _ink,
                             fontSize: 18,
@@ -141,12 +141,13 @@ class CassiaHeader extends StatelessWidget implements PreferredSizeWidget {
         Padding(
           padding: const EdgeInsetsDirectional.only(start: 2),
           child: Text(
-            // Urdu has no capitals, and is never letter-spaced.
-            '${s.isUrdu ? s.motto : s.motto.toUpperCase()} 🌱',
+            // A connected right-to-left script has no capitals and is never
+            // letter-spaced; only English is upper-cased.
+            '${s.isRtl ? s.motto : s.motto.toUpperCase()} 🌱',
             style: TextStyle(
               color: const Color(0xFFA37D2C),
-              // Urdu script needs to be a little larger to be read.
-              fontSize: s.isUrdu ? 11 : 9,
+              // The right-to-left scripts need to be a little larger to read.
+              fontSize: s.isRtl ? 11 : 9,
               fontWeight: FontWeight.w800,
               letterSpacing: s.spacing(2),
               height: 1.2,
@@ -276,16 +277,10 @@ class _LanguageMenu extends StatelessWidget {
 
   final AppSettings settings;
 
-  // Each language is named in itself, whatever language the app is in.
-  static String _short(AppLanguage language) => switch (language) {
-        AppLanguage.en => 'EN',
-        AppLanguage.ur => 'اردو',
-      };
+  // Each language names itself, whatever language the app is in.
+  static String _short(AppLanguage language) => language.shortLabel;
 
-  static String _name(AppLanguage language) => switch (language) {
-        AppLanguage.en => 'English',
-        AppLanguage.ur => 'اردو',
-      };
+  static String _name(AppLanguage language) => language.label;
 
   Future<void> _open(BuildContext context) async {
     final button = context.findRenderObject()! as RenderBox;

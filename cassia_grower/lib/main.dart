@@ -72,18 +72,21 @@ class CassiaApp extends StatelessWidget {
           child: ListenableBuilder(
             listenable: settings,
             builder: (context, _) {
-              final urdu = settings.language == AppLanguage.ur;
+              // Every language but English reads right-to-left and uses the
+              // connected-script text treatment.
+              final rtl = settings.language.rtl;
               return MaterialApp(
                 title: 'Cassia Grower',
                 debugShowCheckedModeBanner: false,
-                // Urdu switches the whole app to right-to-left.
-                locale: settings.language.locale,
-                supportedLocales: [
-                  for (final language in AppLanguage.values) language.locale,
-                ],
+                // A right-to-left language lays the whole app out right to
+                // left. Flutter's own widgets are localised in English and
+                // Urdu only, so the regional languages borrow Urdu's layout
+                // while their own words come from AppStrings.
+                locale: settings.language.materialLocale,
+                supportedLocales: const [Locale('en'), Locale('ur')],
                 localizationsDelegates: GlobalMaterialLocalizations.delegates,
-                theme: buildAppTheme(Brightness.light, cursive: urdu),
-                darkTheme: buildAppTheme(Brightness.dark, cursive: urdu),
+                theme: buildAppTheme(Brightness.light, cursive: rtl),
+                darkTheme: buildAppTheme(Brightness.dark, cursive: rtl),
                 themeMode: settings.themeMode,
                 home: home,
               );

@@ -3,30 +3,54 @@ import 'package:material_ui/material_ui.dart';
 import '../data/local_store.dart';
 
 /// The languages the app is written in.
+///
+/// English is left-to-right; every other language here is written in a
+/// Perso-Arabic script and reads right-to-left. Each is named in its own
+/// script so it can always be recognised, whatever language the app is in.
 enum AppLanguage {
-  en('en'),
-  ur('ur');
+  en('en', 'English', 'EN', rtl: false),
+  ur('ur', 'اردو', 'اردو'),
+  sd('sd', 'سنڌي', 'سنڌي'),
+  pa('pa', 'پنجابی', 'پنجابی'),
+  ps('ps', 'پښتو', 'پښتو'),
+  bal('bal', 'بلوچی', 'بلوچی');
 
-  const AppLanguage(this.code);
+  const AppLanguage(this.code, this.label, this.shortLabel, {this.rtl = true});
 
   /// The language code, as used for the locale and sent to the AI features.
   final String code;
 
-  Locale get locale => Locale(code);
+  /// The language's own name, shown in the language menus.
+  final String label;
+
+  /// A short form of [label] for the compact header button.
+  final String shortLabel;
+
+  /// Whether the language reads right-to-left (every one here but English).
+  final bool rtl;
+
+  /// The locale handed to Flutter's own Material widgets (date pickers, the
+  /// copy/paste menu). Flutter ships translations for English and Urdu only,
+  /// so the four regional languages reuse Urdu's right-to-left layout — their
+  /// own words come from [AppStrings], not from Flutter.
+  Locale get materialLocale => rtl ? const Locale('ur') : const Locale('en');
 }
 
 /// The farmer's choices for the whole app: language and light/dark theme.
 /// Both are remembered on the phone.
 class AppSettings extends ChangeNotifier {
   /// [deviceLocale] decides the language the first time the app is opened:
-  /// a phone set to Urdu starts in Urdu, any other starts in English.
+  /// a phone set to one of the app's languages starts in that language, any
+  /// other starts in English.
   AppSettings({LocalStore? store, Locale? deviceLocale})
       : _store = store ?? MemoryStore() {
     final savedLanguage = _store.read(_languageKey);
     _language = AppLanguage.values.firstWhere(
       (l) => l.code == savedLanguage,
-      orElse: () =>
-          deviceLocale?.languageCode == 'ur' ? AppLanguage.ur : AppLanguage.en,
+      orElse: () => AppLanguage.values.firstWhere(
+        (l) => l.code == deviceLocale?.languageCode,
+        orElse: () => AppLanguage.en,
+      ),
     );
     final savedTheme = _store.read(_themeKey);
     _themeMode = ThemeMode.values.firstWhere(

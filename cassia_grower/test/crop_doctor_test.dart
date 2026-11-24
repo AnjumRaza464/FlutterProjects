@@ -108,8 +108,8 @@ Future<void> _open(
   await tester.pumpWidget(AppSettingsScope(
     settings: settings,
     child: MaterialApp(
-      locale: settings.language.locale,
-      supportedLocales: [for (final l in AppLanguage.values) l.locale],
+      locale: settings.language.materialLocale,
+      supportedLocales: const [Locale('en'), Locale('ur')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: buildAppTheme(Brightness.light, cursive: urdu),
       home: CropDoctorScreen(

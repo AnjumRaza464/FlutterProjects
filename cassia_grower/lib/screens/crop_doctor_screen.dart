@@ -738,7 +738,7 @@ class _CropDoctorScreenState extends State<CropDoctorScreen>
     // was asked for in.
     final s = _resultStrings;
     return Directionality(
-      textDirection: s.isUrdu ? TextDirection.rtl : TextDirection.ltr,
+      textDirection: s.isRtl ? TextDirection.rtl : TextDirection.ltr,
       child: Padding(
         padding: const EdgeInsets.only(top: 14),
         child: Column(
@@ -789,8 +789,10 @@ class _CropDoctorScreenState extends State<CropDoctorScreen>
       AiFailureKind.offline => (s.noConnectionTitle, s.noConnectionBody),
       AiFailureKind.other => (
           s.diagnosisFailed,
-          // The server explains itself in English only.
-          s.isUrdu
+          // The server explains itself in English only, so its raw message is
+          // shown in English and replaced by a general line in every other
+          // language.
+          s.isRtl
               ? s.somethingWentWrong
               : failure.serverMessage ?? s.somethingWentWrong
         ),

@@ -32,35 +32,37 @@ class AccountTopCards extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-              Expanded(
-                child: _AccountCard(
-                  icon: '🤝',
-                  kicker: s.forDealers,
-                  title: isDealer ? s.viewDashboard : s.dealership,
-                  subtitle: s.dealershipSub,
-                  gradient: const [Color(0xFF2B2318), Color(0xFF3C3220)],
-                  arrowBg: const Color(0x33FFFFFF),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (_) => const DealerPortalScreen()),
+                Expanded(
+                  child: _AccountCard(
+                    icon: '🤝',
+                    kicker: s.forDealers,
+                    title: isDealer ? s.viewDashboard : s.dealership,
+                    subtitle: s.dealershipSub,
+                    gradient: const [Color(0xFF2B2318), Color(0xFF3C3220)],
+                    arrowBg: const Color(0x33FFFFFF),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const DealerPortalScreen(),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _AccountCard(
-                  icon: '🧑‍🌾',
-                  kicker: s.forFarmers,
-                  title: isFarmer ? s.myFarmerAccount : s.farmerLogin,
-                  subtitle: s.farmerLoginSub,
-                  gradient: const [Color(0xFF1F5A30), Color(0xFF2F7A3F)],
-                  arrowBg: const Color(0x33FFFFFF),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (_) => const FarmerAuthScreen()),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _AccountCard(
+                    icon: '🧑‍🌾',
+                    kicker: s.forFarmers,
+                    title: isFarmer ? s.myFarmerAccount : s.farmerLogin,
+                    subtitle: s.farmerLoginSub,
+                    gradient: const [Color(0xFF1F5A30), Color(0xFF2F7A3F)],
+                    arrowBg: const Color(0x33FFFFFF),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const FarmerAuthScreen(),
+                      ),
+                    ),
                   ),
                 ),
-              ),
               ],
             ),
           ),
@@ -98,8 +100,10 @@ class _AccountCardState extends State<_AccountCard>
   bool _down = false;
 
   // A soft light streak that sweeps diagonally across the card, then rests.
-  late final AnimationController _shine =
-      AnimationController(vsync: this, duration: const Duration(seconds: 4));
+  late final AnimationController _shine = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 4),
+  );
 
   @override
   void didChangeDependencies() {
@@ -174,90 +178,102 @@ class _AccountCardState extends State<_AccountCard>
             boxShadow: [
               if (!_down)
                 const BoxShadow(
-                    color: Color(0x33000000),
-                    blurRadius: 16,
-                    offset: Offset(0, 8)),
+                  color: Color(0x33000000),
+                  blurRadius: 16,
+                  offset: Offset(0, 8),
+                ),
             ],
           ),
           child: Stack(
             children: [
-              Positioned.fill(
-                  child: IgnorePointer(child: _buildShine())),
+              Positioned.fill(child: IgnorePointer(child: _buildShine())),
               Padding(
                 padding: const EdgeInsets.all(14),
-                child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: const Color(0x22FFFFFF),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(widget.icon, style: const TextStyle(fontSize: 20)),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                widget.kicker,
-                style: TextStyle(
-                  color: const Color(0xFFE2BD62),
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: s.spacing(1),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                widget.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Color(0xCCFFFFFF),
-                        fontSize: 11,
-                        height: 1.2,
+                // A connected right-to-left script renders a hair taller than
+                // its measured height. Letting the column keep its natural
+                // size (the card already clips to its rounded corners) takes
+                // that last sub-pixel instead of a 1-pixel overflow stripe.
+                child: OverflowBox(
+                  alignment: AlignmentDirectional.topStart,
+                  maxHeight: double.infinity,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: const Color(0x22FFFFFF),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          widget.icon,
+                          style: const TextStyle(fontSize: 20),
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Container(
-                    width: 26,
-                    height: 26,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: widget.arrowBg,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      s.arrow,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        height: 1,
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.kicker,
+                        style: TextStyle(
+                          color: const Color(0xFFE2BD62),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: s.spacing(1),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xCCFFFFFF),
+                                fontSize: 11,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            width: 26,
+                            height: 26,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: widget.arrowBg,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              s.arrow,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                height: 1,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
               ),
             ],
           ),

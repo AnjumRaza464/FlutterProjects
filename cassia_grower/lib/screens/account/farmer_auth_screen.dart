@@ -320,7 +320,7 @@ class _FarmerFormsState extends State<_FarmerForms> {
   }
 
   Widget _registerStep(AppStrings s) {
-    final urdu = s.isUrdu;
+    final rtl = s.isRtl;
     final titles = [
       s.whatIsYourName,
       s.whatIsYourMobile,
@@ -343,7 +343,7 @@ class _FarmerFormsState extends State<_FarmerForms> {
                 fontWeight: FontWeight.w800,
                 color: context.colors.ink)),
         const SizedBox(height: 14),
-        _stepField(s, urdu),
+        _stepField(s, rtl),
         const SizedBox(height: 22),
         _busy
             ? const _Spinner()
@@ -374,7 +374,7 @@ class _FarmerFormsState extends State<_FarmerForms> {
     );
   }
 
-  Widget _stepField(AppStrings s, bool urdu) {
+  Widget _stepField(AppStrings s, bool rtl) {
     switch (_step) {
       case 0:
         return _labelled(
@@ -463,7 +463,7 @@ class _FarmerFormsState extends State<_FarmerForms> {
           children: [
             for (final crop in _cropChoices)
               _CropChip(
-                label: '${crop.emoji} ${urdu ? crop.ur : crop.en}',
+                label: '${crop.emoji} ${rtl ? crop.ur : crop.en}',
                 selected: _crops.contains(crop.en),
                 onTap: () => setState(() {
                   _crops.contains(crop.en)

@@ -391,10 +391,10 @@ class _ProductSheetState extends State<ProductSheet> {
     return [
       _Fact(s.brandLabel,
           p.brandLine.isNotEmpty ? s.data(p.brandLine) : s.cassiaBrand),
-      if (p.crop.isNotEmpty) _Fact(s.cropLabel, s.data(p.crop)),
+      if (p.crop.isNotEmpty) _Fact(s.cropLabel, s.data(s.cropName(p.crop))),
       if (p.type.isNotEmpty) _Fact(s.typeLabel, s.data(p.type)),
       _Fact(s.packSizeLabel,
-          p.packSize.isNotEmpty ? s.data(p.packSize) : s.askCompany),
+          p.packSize.isNotEmpty ? s.data(s.packSize(p.packSize)) : s.askCompany),
       _Fact(s.priceLabel, s.onRequest),
     ];
   }

@@ -68,7 +68,10 @@ class CropDoctorService {
         for (final photo in photos.take(maxPhotos))
           {'base64': base64Encode(photo.bytes), 'mimeType': photo.mimeType},
       ],
-      'language': language == 'ur' ? 'ur' : 'en',
+      // The server answers in English or Urdu only; the regional languages
+      // (Sindhi, Punjabi, Pashto, Balochi) are answered in Urdu, which their
+      // speakers read, rather than English.
+      'language': language == 'en' ? 'en' : 'ur',
       'crop': crop.trim(),
       'stage': stage.trim(),
       'days': days.trim(),
