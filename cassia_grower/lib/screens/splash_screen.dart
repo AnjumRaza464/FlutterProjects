@@ -45,7 +45,7 @@ class _SplashGateState extends State<SplashGate> {
   }
 }
 
-/// The brand screen itself: a dark-green gradient, the logo on its white chip,
+/// The brand screen itself: a fresh green gradient, the logo on its white chip,
 /// the "GROW WITH CASSIA" line, and a gold bar that sweeps in from the left.
 class _CassiaSplash extends StatefulWidget {
   const _CassiaSplash({super.key});
@@ -74,13 +74,13 @@ class _CassiaSplashState extends State<_CassiaSplash>
 
   @override
   Widget build(BuildContext context) {
-    // Brand gradient, straight from the prototype (#143d20 → #1f5a30).
+    // Fresh brand green — matches the admin panel's sign-in background.
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF143D20), Color(0xFF1F5A30)],
+          colors: [Color(0xFF2EA863), Color(0xFF178F4E), Color(0xFF0F7A41)],
         ),
       ),
       child: Center(
