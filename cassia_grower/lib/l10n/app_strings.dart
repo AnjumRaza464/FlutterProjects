@@ -259,6 +259,102 @@ class AppStrings {
       pa: 'مدد تے تعارف',
       ps: 'مرسته او پیژندنه',
       bal: 'مدد ءُ تعارف');
+
+  // --------------------------------------------------------- about screen
+  // The company's story, straight from cassiaseed.com. English and Urdu are
+  // given; the four regional languages fall back to the Urdu wording.
+  String get aboutTagline => _t(
+      'Seeds That Deliver Trust, Yield, and Growth',
+      'ایسے بیج جو بھروسہ، پیداوار اور ترقی دیں');
+
+  String get aboutWhoTitle =>
+      _t("Pakistan's trusted seed company", 'پاکستان کی قابلِ اعتماد سیڈ کمپنی');
+  String get aboutWhoBody => _t(
+      'Cassia Seed (Pvt) Ltd is a professional research, trade and marketing '
+          'company dedicated to the seed industry. We focus on high-quality '
+          'hybrid and open-pollination seeds, giving farmers higher-yielding, '
+          'more reliable varieties. Through our own research and development we '
+          'work to improve agricultural productivity across Pakistan.',
+      'کیسیا سیڈ (پرائیویٹ) لمیٹڈ ایک پیشہ ور ریسرچ، تجارت اور مارکیٹنگ کمپنی ہے '
+          'جو بیجوں کے شعبے کے لیے وقف ہے۔ ہم اعلیٰ معیار کے ہائبرڈ اور اوپن '
+          'پولینیشن بیجوں پر توجہ دیتے ہیں تاکہ کسانوں کو زیادہ پیداوار دینے والی '
+          'اور قابلِ بھروسہ اقسام مل سکیں۔ اپنی تحقیق و ترقی کے ذریعے ہم پورے '
+          'پاکستان میں زرعی پیداوار بہتر بنانے کے لیے کام کرتے ہیں۔');
+
+  String get aboutDoTitle => _t('Research, Trade & Support',
+      'تحقیق، تجارت اور معاونت');
+  String get aboutResearchTitle => _t('Research & Development', 'تحقیق و ترقی');
+  String get aboutResearchBody => _t(
+      'Developing high-yielding, disease-resistant and climate-tolerant seed '
+          'varieties.',
+      'زیادہ پیداوار دینے والی، بیماری سے محفوظ اور موسم کے لحاظ سے مضبوط بیجوں '
+          'کی اقسام تیار کرنا۔');
+  String get aboutTradingTitle => _t('Seed Trading', 'بیجوں کی تجارت');
+  String get aboutTradingBody => _t(
+      'Importing, producing locally and distributing premium hybrid and '
+          'open-pollination vegetable seeds to farmers and dealers nationwide.',
+      'اعلیٰ معیار کے ہائبرڈ اور اوپن پولینیشن سبزیوں کے بیج درآمد کرنا، مقامی '
+          'طور پر تیار کرنا اور ملک بھر کے کسانوں اور ڈیلرز تک پہنچانا۔');
+  String get aboutMarketingTitle => _t('Marketing & Support', 'مارکیٹنگ اور معاونت');
+  String get aboutMarketingBody => _t(
+      'Farmer meetings, expert guidance, field demonstrations and marketing '
+          'support.',
+      'کسانوں کے اجلاس، ماہرانہ رہنمائی، کھیت میں عملی مظاہرے اور مارکیٹنگ میں '
+          'مدد۔');
+
+  String get aboutCommitmentTitle =>
+      _t('Seeds farmers can trust', 'ایسے بیج جن پر کسان بھروسہ کریں');
+  String get aboutCommitmentBody => _t(
+      'We are committed to delivering seeds that farmers can trust. With our '
+          'research facilities, strict quality control and a nationwide '
+          'distribution network, we help farmers raise their productivity and '
+          'profitability season after season.',
+      'ہم ایسے بیج فراہم کرنے کے لیے پُرعزم ہیں جن پر کسان بھروسہ کر سکیں۔ اپنی '
+          'تحقیقی سہولیات، سخت معیار کی جانچ اور ملک گیر ترسیلی نیٹ ورک کے ذریعے '
+          'ہم ہر موسم میں کسانوں کی پیداوار اور منافع بڑھانے میں مدد دیتے ہیں۔');
+
+  String get aboutVisionTitle => _t('Our Vision', 'ہمارا وژن');
+  String get aboutVisionBody => _t(
+      'To be the preferred partner in agriculture — driving growth through '
+          'innovation, sustainability and excellence, and creating lasting value '
+          'for farmers, communities and stakeholders.',
+      'زراعت میں سب سے پسندیدہ ساتھی بننا — جدت، پائیداری اور معیار کے ذریعے ترقی '
+          'کو آگے بڑھانا، اور کسانوں، برادریوں اور شراکت داروں کے لیے دیرپا قدر '
+          'پیدا کرنا۔');
+  String get aboutMissionTitle => _t('Our Mission', 'ہمارا مشن');
+  String get aboutMissionBody => _t(
+      'Empowering farmers and communities through high-quality seed solutions '
+          'and sustainable agricultural growth.',
+      'اعلیٰ معیار کے بیجوں اور پائیدار زرعی ترقی کے ذریعے کسانوں اور برادریوں کو '
+          'بااختیار بنانا۔');
+
+  String get aboutStoryTitle =>
+      _t('From a humble shop to a national seed company',
+          'ایک چھوٹی دکان سے ملک گیر سیڈ کمپنی تک');
+  String get aboutStoryBody1 => _t(
+      'Our journey began in 1985 as a small local agricultural seed shop. Over '
+          'more than forty years our founder earned the trust of farmers and '
+          'built a reputation for quality, growing the shop into a recognised '
+          'regional supplier and distributor.',
+      'ہمارا سفر 1985 میں ایک چھوٹی مقامی زرعی بیجوں کی دکان سے شروع ہوا۔ چالیس '
+          'سال سے زائد عرصے میں ہمارے بانی نے کسانوں کا اعتماد جیتا اور معیار کی '
+          'پہچان بنائی، اور اس دکان کو ایک معتبر علاقائی سپلائر اور ڈسٹری بیوٹر '
+          'میں بدل دیا۔');
+  String get aboutStoryBody2 => _t(
+      'In 2022 the business was formally established as Cassia Seed (Pvt) Ltd. '
+          'Today we import and locally produce high-quality vegetable seeds, '
+          "supporting the growth of Pakistan's agriculture sector.",
+      '2022 میں اس کاروبار کو باقاعدہ طور پر کیسیا سیڈ (پرائیویٹ) لمیٹڈ کے نام سے '
+          'قائم کیا گیا۔ آج ہم اعلیٰ معیار کی سبزیوں کے بیج درآمد اور مقامی طور پر '
+          'تیار کرتے ہیں، اور پاکستان کے زرعی شعبے کی ترقی میں معاونت کرتے ہیں۔');
+  String get aboutStatFounded => _t('Founded', 'آغاز');
+  String get aboutStatYears => _t('Years', 'سال');
+  String get aboutStatIncorporated => _t('Incorporated', 'کمپنی قائم');
+
+  String get aboutQuote => _t(
+      'Grow with confidence. Grow with Cassia Seed.',
+      'اعتماد کے ساتھ اگائیں۔ کیسیا سیڈ کے ساتھ اگائیں۔');
+  String get aboutVisitWebsite => _t('Visit our website', 'ہماری ویب سائٹ دیکھیں');
   String get shopByCrop => _t('Shop by Crop', 'فصل کے حساب سے',
       sd: 'فصل جي لحاظ کان',
       pa: 'فصل دے حساب نال',

@@ -18,6 +18,7 @@ import '../widgets/cassia_ui.dart';
 import '../widgets/product_card.dart';
 import '../widgets/product_image.dart';
 import '../widgets/weather_card.dart';
+import 'about_screen.dart';
 import 'ask_cassia_screen.dart';
 import 'find_dealer_screen.dart';
 import 'more_screen.dart';
@@ -72,6 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openFindDealer() {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (_) => const FindDealerScreen()));
+  }
+
+  void _openAbout() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (_) => const AboutScreen()));
   }
 
   void _ask(String question) {
@@ -145,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onTab: widget.onOpenTab,
               onMore: _openMore,
               onFindDealer: _openFindDealer,
+              onAbout: _openAbout,
             )),
 
             padded(const WeatherCard()),
@@ -627,11 +634,15 @@ class _MarqueeState extends State<_Marquee>
 
 class _QuickActions extends StatelessWidget {
   const _QuickActions(
-      {required this.onTab, required this.onMore, required this.onFindDealer});
+      {required this.onTab,
+      required this.onMore,
+      required this.onFindDealer,
+      required this.onAbout});
 
   final void Function(int index) onTab;
   final VoidCallback onMore;
   final VoidCallback onFindDealer;
+  final VoidCallback onAbout;
 
   @override
   Widget build(BuildContext context) {
@@ -642,10 +653,9 @@ class _QuickActions extends StatelessWidget {
       ('🌱', s.seedShop, () => onTab(1)),
       ('🛒', s.myOrder, () => onTab(4)),
       ('📞', s.support, onMore),
-      ('🏢', s.aboutUs, onMore),
+      ('🏢', s.aboutUs, onAbout),
       ('🚜', s.myFarm, onMore),
       ('📍', s.findDealer, onFindDealer),
-      ('🆘', s.help, onMore),
     ];
     return Padding(
       padding: const EdgeInsets.only(top: 20),
