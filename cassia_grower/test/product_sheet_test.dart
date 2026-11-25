@@ -419,7 +419,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // The chat is not opened; a "coming soon" sheet shows instead.
-      expect(find.textContaining('almost ready'), findsOneWidget);
+      expect(find.textContaining('coming very soon'), findsOneWidget);
       expect(find.byType(AskCassiaScreen), findsNothing);
       expect(find.byType(ProductSheet), findsOneWidget);
       expect(ai.histories, isEmpty);
@@ -433,7 +433,7 @@ void main() {
 
       await _tap(tester, find.text('🌿 General crop guide (AI)'));
 
-      expect(find.textContaining('almost ready'), findsOneWidget);
+      expect(find.textContaining('coming very soon'), findsOneWidget);
       // The AI is never asked while the feature is coming soon.
       expect(ai.histories, isEmpty);
     });
