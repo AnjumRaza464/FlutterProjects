@@ -12,7 +12,13 @@ class Product {
   final String packSize; // e.g. "10 g" (may be empty)
   final String brandLine; // e.g. "MalaPine" (optional sub-brand)
   final String printedInfo; // germination/purity text printed on pack
-  final String imageUrl; // Firebase Storage image URL
+  final String imageUrl; // primary image (first of [imageUrls]); kept for
+  // backward compatibility with products saved before galleries existed.
+
+  /// All photos uploaded for this product, in display order. The first one is
+  /// the primary image (mirrored into [imageUrl]). Empty for older products
+  /// that only have a single [imageUrl].
+  final List<String> imageUrls;
 
   /// Whether the variety can be ordered.
   /// When false, the app shows a "Not available yet" overlay and hides the
@@ -39,6 +45,7 @@ class Product {
     this.brandLine = '',
     this.printedInfo = '',
     this.imageUrl = '',
+    this.imageUrls = const [],
     this.available = true,
     this.sortOrder = 0,
     this.isNew = false,
@@ -57,6 +64,10 @@ class Product {
       brandLine: (map['brandLine'] ?? '') as String,
       printedInfo: (map['printedInfo'] ?? '') as String,
       imageUrl: (map['imageUrl'] ?? '') as String,
+      imageUrls: [
+        for (final u in (map['imageUrls'] as List?) ?? const [])
+          if (u is String && u.trim().isNotEmpty) u.trim(),
+      ],
       available: (map['available'] ?? true) as bool,
       sortOrder: (map['sortOrder'] ?? 0) as int,
       isNew: (map['isNew'] ?? false) as bool,
@@ -80,6 +91,12 @@ class Product {
         .every(text.contains);
   }
 
+  /// Photos for the product gallery: the uploaded [imageUrls] when present,
+  /// otherwise the single legacy [imageUrl], otherwise empty.
+  List<String> get gallery => imageUrls.isNotEmpty
+      ? imageUrls
+      : (imageUrl.isNotEmpty ? [imageUrl] : const <String>[]);
+
   /// Convert to a map for writing to Firestore.
   Map<String, dynamic> toMap() {
     return {
@@ -91,6 +108,7 @@ class Product {
       'brandLine': brandLine,
       'printedInfo': printedInfo,
       'imageUrl': imageUrl,
+      'imageUrls': imageUrls,
       'available': available,
       'sortOrder': sortOrder,
       'isNew': isNew,

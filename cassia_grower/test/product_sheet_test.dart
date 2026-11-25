@@ -190,6 +190,57 @@ void main() {
       expect(find.text('Showcase'), findsOneWidget);
     });
 
+    testWidgets('uploaded photos become a gallery — one slide each',
+        (tester) async {
+      await _open(
+        tester,
+        const Product(
+          id: 'multi',
+          name: 'Multi F1',
+          crop: 'Tomato',
+          cropKey: 'tomato',
+          imageUrl: 'https://example.com/a.jpg',
+          imageUrls: [
+            'https://example.com/a.jpg',
+            'https://example.com/b.jpg',
+            'https://example.com/c.jpg',
+          ],
+        ),
+      );
+
+      // The bundled Front / Close-up / Showcase slides are replaced by one
+      // numbered slide per uploaded photo.
+      expect(find.text('Front'), findsNothing);
+      expect(find.text('1 / 3'), findsOneWidget);
+
+      await tester.drag(find.byType(PageView), const Offset(-400, 0));
+      await tester.pumpAndSettle();
+      expect(find.text('2 / 3'), findsOneWidget);
+
+      await tester.drag(find.byType(PageView), const Offset(-400, 0));
+      await tester.pumpAndSettle();
+      expect(find.text('3 / 3'), findsOneWidget);
+    });
+
+    testWidgets('a single uploaded photo keeps the bundled three-slide look',
+        (tester) async {
+      await _open(
+        tester,
+        const Product(
+          id: 'one',
+          name: 'One F1',
+          crop: 'Tomato',
+          cropKey: 'tomato',
+          imageUrl: 'https://example.com/a.jpg',
+          imageUrls: ['https://example.com/a.jpg'],
+        ),
+      );
+
+      // With fewer than two photos the original gallery is unchanged.
+      expect(find.text('Front'), findsOneWidget);
+      expect(find.text('1 / 1'), findsNothing);
+    });
+
     testWidgets('the photos can be changed with a mouse or by their dots',
         (tester) async {
       await _open(tester, _redo);

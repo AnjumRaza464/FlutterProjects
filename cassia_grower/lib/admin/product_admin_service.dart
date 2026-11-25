@@ -32,12 +32,18 @@ class ProductAdminService {
       _col.doc(id).update({'available': value});
 
   /// Uploads a product image to Storage and returns its download URL.
+  ///
+  /// [index] keeps each photo of a product at its own path
+  /// (`products/<id>_<index>`), so a product can have several images. The
+  /// path stays a single segment under `products/`, which the Storage rules
+  /// allow admins to write (see storage.rules).
   Future<String> uploadImage(
     String id,
     Uint8List bytes, {
+    int index = 0,
     String contentType = 'image/jpeg',
   }) async {
-    final ref = _storage.ref('products/$id');
+    final ref = _storage.ref('products/${id}_$index');
     await ref.putData(bytes, SettableMetadata(contentType: contentType));
     return ref.getDownloadURL();
   }

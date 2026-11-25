@@ -302,38 +302,71 @@ class _ProductSheetState extends State<ProductSheet> {
       child: Transform.scale(scale: 0.82, child: pack()),
     );
 
-    final slides = [
-      _Slide(
-        label: s.photoFront,
-        decoration: wash,
-        stamp: p.available ? null : const NotAvailableBadge(),
-        child: _Sway(child: pack()),
-      ),
-      _Slide(
-        label: s.photoCloseUp,
-        decoration: wash,
-        child: extras.isNotEmpty ? extra(extras[0], closeUp) : closeUp,
-      ),
-      _Slide(
-        label: s.photoShowcase,
-        // A dark stage with a spotlight on the pack.
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF2A2218), Color(0xFF0F0C08)],
-          ),
-        ),
-        foreground: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0, -0.44),
-            radius: 0.67,
-            colors: [Color(0x40FFFFFF), Color(0x00FFFFFF)],
-          ),
-        ),
-        child: extras.length > 1 ? extra(extras[1], showcase) : showcase,
-      ),
-    ];
+    // When the admin has uploaded a gallery (2+ photos), show those photos as
+    // the slides. With 0–1 uploaded photo we keep the original bundled look
+    // (front / close-up / showcase), where the single photo already appears.
+    final slides = p.imageUrls.length >= 2
+        ? [
+            for (var i = 0; i < p.imageUrls.length; i++)
+              _Slide(
+                label: '${i + 1} / ${p.imageUrls.length}',
+                decoration: wash,
+                stamp:
+                    (i == 0 && !p.available) ? const NotAvailableBadge() : null,
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Image.network(
+                    p.imageUrls[i],
+                    fit: BoxFit.contain,
+                    loadingBuilder: (context, child, progress) =>
+                        progress == null
+                            ? child
+                            : const Center(
+                                child: SizedBox(
+                                  width: 26,
+                                  height: 26,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2.5),
+                                ),
+                              ),
+                    errorBuilder: (context, error, stack) =>
+                        ProductImage.bare(product: p),
+                  ),
+                ),
+              ),
+          ]
+        : [
+            _Slide(
+              label: s.photoFront,
+              decoration: wash,
+              stamp: p.available ? null : const NotAvailableBadge(),
+              child: _Sway(child: pack()),
+            ),
+            _Slide(
+              label: s.photoCloseUp,
+              decoration: wash,
+              child: extras.isNotEmpty ? extra(extras[0], closeUp) : closeUp,
+            ),
+            _Slide(
+              label: s.photoShowcase,
+              // A dark stage with a spotlight on the pack.
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF2A2218), Color(0xFF0F0C08)],
+                ),
+              ),
+              foreground: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(0, -0.44),
+                  radius: 0.67,
+                  colors: [Color(0x40FFFFFF), Color(0x00FFFFFF)],
+                ),
+              ),
+              child: extras.length > 1 ? extra(extras[1], showcase) : showcase,
+            ),
+          ];
 
     return Column(
       mainAxisSize: MainAxisSize.min,

@@ -23,26 +23,29 @@ class ProductFormScreen extends StatefulWidget {
 }
 
 class _ProductFormScreenState extends State<ProductFormScreen> {
-  final _admin = ProductAdminService();
+  // Lazy so the screen can be built in a widget test without Firebase — the
+  // service (and Firestore/Storage) is only created when a save/upload runs.
+  late final _admin = ProductAdminService();
   final _picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _name;
   late final TextEditingController _crop;
-  late final TextEditingController _cropKey;
   late final TextEditingController _type;
   late final TextEditingController _packSize;
   late final TextEditingController _brandLine;
   late final TextEditingController _printedInfo;
   late final TextEditingController _features;
-  late final TextEditingController _imageUrl;
-  late final TextEditingController _sortOrder;
 
   late bool _available;
   late bool _isNew;
 
-  Uint8List? _pickedBytes; // new image chosen but not yet uploaded
-  String _pickedContentType = 'image/jpeg';
+  static const _maxImages = 6;
+
+  // Each gallery slot is either a photo already uploaded (its URL) or one
+  // freshly picked and waiting to upload on save. The first slot is the
+  // primary image shown in lists.
+  final List<_ImageSlot> _images = [];
   bool _saving = false;
 
   bool get _isEdit => widget.existing != null;
@@ -53,16 +56,20 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     final p = widget.existing;
     _name = TextEditingController(text: p?.name ?? '');
     _crop = TextEditingController(text: p?.crop ?? '');
-    _cropKey = TextEditingController(text: p?.cropKey ?? '');
     _type = TextEditingController(text: p?.type ?? '');
     _packSize = TextEditingController(text: p?.packSize ?? '');
     _brandLine = TextEditingController(text: p?.brandLine ?? '');
     _printedInfo = TextEditingController(text: p?.printedInfo ?? '');
     _features = TextEditingController(text: (p?.features ?? []).join('\n'));
-    _imageUrl = TextEditingController(text: p?.imageUrl ?? '');
-    _sortOrder = TextEditingController(text: (p?.sortOrder ?? 0).toString());
     _available = p?.available ?? true;
     _isNew = p?.isNew ?? false;
+
+    // Seed the gallery with the product's existing photos (the new [imageUrls]
+    // list, or the single legacy [imageUrl]).
+    final existingUrls = (p?.imageUrls.isNotEmpty ?? false)
+        ? p!.imageUrls
+        : ((p?.imageUrl.isNotEmpty ?? false) ? [p!.imageUrl] : const <String>[]);
+    _images.addAll(existingUrls.map(_ImageSlot.existing));
   }
 
   @override
@@ -70,34 +77,37 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     for (final c in [
       _name,
       _crop,
-      _cropKey,
       _type,
       _packSize,
       _brandLine,
       _printedInfo,
       _features,
-      _imageUrl,
-      _sortOrder,
     ]) {
       c.dispose();
     }
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1280,
-      imageQuality: 80,
-    );
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    setState(() {
-      _pickedBytes = bytes;
-      _pickedContentType =
-          picked.name.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
-    });
+  /// Pick one or more photos from the gallery and append them (up to
+  /// [_maxImages] total). They upload when the form is saved.
+  Future<void> _pickImages() async {
+    final remaining = _maxImages - _images.length;
+    if (remaining <= 0) return;
+    final picked =
+        await _picker.pickMultiImage(maxWidth: 1280, imageQuality: 80);
+    if (picked.isEmpty) return;
+    final slots = <_ImageSlot>[];
+    for (final x in picked.take(remaining)) {
+      final bytes = await x.readAsBytes();
+      final ct =
+          x.name.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+      slots.add(_ImageSlot.picked(bytes, ct));
+    }
+    if (!mounted) return;
+    setState(() => _images.addAll(slots));
   }
+
+  void _removeImage(int i) => setState(() => _images.removeAt(i));
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
@@ -105,20 +115,27 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
     final id = widget.existing?.id ?? _admin.newId();
     try {
-      // Upload a newly chosen image first, then store its URL on the product.
-      var imageUrl = _imageUrl.text.trim();
-      if (_pickedBytes != null) {
-        imageUrl = await _admin.uploadImage(id, _pickedBytes!,
-            contentType: _pickedContentType);
+      // Upload any newly picked photos, keep existing URLs, in order. The
+      // first photo becomes the primary [imageUrl] (used in lists).
+      final imageUrls = <String>[];
+      for (var i = 0; i < _images.length; i++) {
+        final slot = _images[i];
+        if (slot.bytes != null) {
+          imageUrls.add(await _admin.uploadImage(id, slot.bytes!,
+              index: i, contentType: slot.contentType));
+        } else if (slot.url != null && slot.url!.isNotEmpty) {
+          imageUrls.add(slot.url!);
+        }
       }
+      final imageUrl = imageUrls.isNotEmpty ? imageUrls.first : '';
 
-      final cropKey = _cropKey.text.trim().isNotEmpty
-          ? _cropKey.text.trim()
-          : _crop.text
-              .trim()
-              .toLowerCase()
-              .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
-              .replaceAll(RegExp(r'^_+|_+$'), '');
+      // Crop key (the filter id) is derived from the crop name — there is no
+      // manual field for it.
+      final cropKey = _crop.text
+          .trim()
+          .toLowerCase()
+          .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+          .replaceAll(RegExp(r'^_+|_+$'), '');
 
       final product = Product(
         id: id,
@@ -130,8 +147,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         brandLine: _brandLine.text.trim(),
         printedInfo: _printedInfo.text.trim(),
         imageUrl: imageUrl,
+        imageUrls: imageUrls,
         available: _available,
-        sortOrder: int.tryParse(_sortOrder.text.trim()) ?? 0,
+        // No manual field: new products sort at 0; edits keep their place.
+        sortOrder: widget.existing?.sortOrder ?? 0,
         isNew: _isNew,
         features: [
           for (final line in _features.text.split('\n'))
@@ -174,15 +193,11 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 const SizedBox(height: 18),
                 _field(_name, 'Name *', required: true),
                 _field(_crop, 'Crop *', required: true),
-                _field(_cropKey, 'Crop key (filter id — auto if blank)'),
                 _field(_type, 'Type (e.g. Hybrid / Selection)'),
                 _field(_packSize, 'Pack size (e.g. 10 g)'),
                 _field(_brandLine, 'Sub-brand (optional)'),
                 _field(_printedInfo, 'Printed info', maxLines: 3),
                 _field(_features, 'Features (one per line)', maxLines: 6),
-                _field(_imageUrl, 'Image URL (set by upload, or paste one)'),
-                _field(_sortOrder, 'Sort order (lower = higher up)',
-                    number: true),
                 const SizedBox(height: 8),
                 SwitchListTile(
                   value: _available,
@@ -222,51 +237,130 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     );
   }
 
+  /// The photo gallery editor: a row of thumbnails (first one is the "Main"
+  /// image) with a remove button on each and an "Add" tile to pick more.
   Widget _imagePicker() {
-    final hasPicked = _pickedBytes != null;
-    final hasExisting = _imageUrl.text.trim().isNotEmpty;
-
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          height: 180,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: AppColors.green.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.line),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: hasPicked
-              ? Image.memory(_pickedBytes!, fit: BoxFit.cover)
-              : hasExisting
-                  ? Image.network(_imageUrl.text.trim(),
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => _imgPlaceholder())
-                  : _imgPlaceholder(),
+        Row(
+          children: [
+            const Icon(Icons.photo_library_outlined,
+                size: 18, color: AppColors.green),
+            const SizedBox(width: 6),
+            Text('Product photos (${_images.length}/$_maxImages)',
+                style: const TextStyle(
+                    fontWeight: FontWeight.w700, color: AppColors.ink)),
+          ],
         ),
-        const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: _pickImage,
-          icon: const Icon(Icons.upload_outlined),
-          label: Text(hasPicked ? 'Change image' : 'Upload image'),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.green,
-            side: const BorderSide(color: AppColors.green),
-          ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            for (var i = 0; i < _images.length; i++) _thumb(i),
+            if (_images.length < _maxImages) _addTile(),
+          ],
         ),
-        if (hasPicked)
-          const Padding(
-            padding: EdgeInsets.only(top: 4),
-            child: Text('Will upload when you save',
-                style: TextStyle(fontSize: 11, color: AppColors.muted)),
-          ),
+        const SizedBox(height: 6),
+        const Text(
+          'Add 3–4 photos of the product. The first photo is the main one '
+          'shown in lists. New photos upload when you save.',
+          style: TextStyle(fontSize: 11, color: AppColors.muted),
+        ),
       ],
     );
   }
 
+  Widget _thumb(int i) {
+    final slot = _images[i];
+    final Widget img = slot.bytes != null
+        ? Image.memory(slot.bytes!, fit: BoxFit.cover)
+        : Image.network(slot.url!,
+            fit: BoxFit.cover, errorBuilder: (_, _, _) => _imgPlaceholder());
+
+    return SizedBox(
+      width: 92,
+      height: 92,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.green.withValues(alpha: 0.06),
+                  border: Border.all(
+                      color: i == 0 ? AppColors.green : AppColors.line,
+                      width: i == 0 ? 1.6 : 1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: img,
+              ),
+            ),
+          ),
+          if (i == 0)
+            PositionedDirectional(
+              start: 4,
+              bottom: 4,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.green,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text('Main',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700)),
+              ),
+            ),
+          PositionedDirectional(
+            end: 2,
+            top: 2,
+            child: GestureDetector(
+              onTap: () => _removeImage(i),
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: const BoxDecoration(
+                  color: Color(0xCC000000),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.close, size: 14, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _addTile() {
+    return GestureDetector(
+      onTap: _pickImages,
+      child: Container(
+        width: 92,
+        height: 92,
+        decoration: BoxDecoration(
+          color: AppColors.green.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.green.withValues(alpha: 0.5)),
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add_a_photo_outlined, color: AppColors.green),
+            SizedBox(height: 4),
+            Text('Add', style: TextStyle(fontSize: 11, color: AppColors.green)),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _imgPlaceholder() => const Center(
-        child: Icon(Icons.image_outlined, size: 40, color: AppColors.muted),
+        child: Icon(Icons.image_outlined, size: 32, color: AppColors.muted),
       );
 
   Widget _field(
@@ -292,4 +386,17 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       ),
     );
   }
+}
+
+/// One slot in the product photo gallery editor: a photo already uploaded
+/// (its [url]) or one freshly picked and waiting to upload (its [bytes]).
+class _ImageSlot {
+  _ImageSlot.existing(this.url)
+      : bytes = null,
+        contentType = 'image/jpeg';
+  _ImageSlot.picked(this.bytes, this.contentType) : url = null;
+
+  final String? url;
+  final Uint8List? bytes;
+  final String contentType;
 }
